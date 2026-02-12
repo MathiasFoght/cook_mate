@@ -24,7 +24,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
-          cache: true
 
       - name: Restore
         run: dotnet restore CookMate.sln
@@ -71,7 +70,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
-          cache: true
 
       - name: Publish API
         run: dotnet publish CookMate_project/CookMate_project.csproj --configuration Release --output out/publish
