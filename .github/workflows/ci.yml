@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+
+      - name: Restore
+        run: dotnet restore CookMate.sln
+
+      - name: Build
+        run: dotnet build CookMate.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test CookMate.sln --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            **/*.trx
+            **/TestResults/**
+          if-no-files-found: warn
+
+  docker-validate:
+    name: Docker Validate
+    runs-on: ubuntu-latest
+    needs: build-test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -f CookMate_project/Dockerfile -t cookmate-api:${{ github.sha }} .
+
+  release-artifact:
+    name: Release Artifact
+    runs-on: ubuntu-latest
+    needs: docker-validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+
+      - name: Publish API
+        run: dotnet publish CookMate_project/CookMate_project.csproj --configuration Release --output out/publish
+
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cookmate-api-publish
+          path: out/publish
+          if-no-files-found: error

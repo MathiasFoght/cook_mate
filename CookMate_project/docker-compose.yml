@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cookmate-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cookmate}
+      POSTGRES_USER: ${POSTGRES_USER:-cookmate}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-MyStrongDbPassword123!}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cookmate} -d ${POSTGRES_DB:-cookmate}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    container_name: cookmate-api
+    restart: unless-stopped
+    build:
+      context: ..
+      dockerfile: CookMate_project/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: http://+:8080
+      AUTO_MIGRATE: ${AUTO_MIGRATE:-true}
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=${POSTGRES_DB:-cookmate};Username=${POSTGRES_USER:-cookmate};Password=${POSTGRES_PASSWORD:-MyStrongDbPassword123!}
+      Jwt__Issuer: ${JWT_ISSUER:-cookmate-api}
+      Jwt__Audience: ${JWT_AUDIENCE:-cookmate-client}
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:-change-me-to-at-least-32-characters}
+      Jwt__AccessTokenMinutes: ${JWT_ACCESS_TOKEN_MINUTES:-30}
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:

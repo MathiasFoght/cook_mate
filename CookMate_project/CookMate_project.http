@@ -1,0 +1,24 @@
+@CookMate_project_HostAddress = http://localhost:8080
+
+GET {{CookMate_project_HostAddress}}/health/live
+Accept: application/json
+
+###
+
+POST {{CookMate_project_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "Password123!"
+}
+
+###
+
+POST {{CookMate_project_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "Password123!"
+}
