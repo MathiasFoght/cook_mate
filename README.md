@@ -1,14 +1,12 @@
-# CookMate API (Docker setup)
-
-Denne mappe kan startes direkte med Docker Compose og spinner både API og database op.
+# CookMate Backend
 
 ## Krav
 
 - Docker Desktop (eller Docker Engine + Compose plugin)
 
-## Hurtig start
+## Hurtig startup
 
-1. Opret lokal miljøfil:
+1. Opret lokal enviroment:
 
    ```bash
    cp .env.example .env
@@ -24,10 +22,7 @@ Denne mappe kan startes direkte med Docker Compose og spinner både API og datab
    docker compose up --build
    ```
 
-4. Åbn Swagger:
-   - `http://localhost:8080/swagger`
-
-## Stop og oprydning
+## Stop og clean up
 
 - Stop services:
 
@@ -49,42 +44,4 @@ Denne mappe kan startes direkte med Docker Compose og spinner både API og datab
   - User: `POSTGRES_USER`
   - Password: `POSTGRES_PASSWORD`
 
-## Typiske endpoints
 
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET /api/auth/me` (kræver Bearer token)
-- `GET /health/live`
-- `GET /health/ready`
-
-## CI/CD baseline
-
-Projektet bruger en GitHub Actions baseline pipeline.
-
-### Triggers
-
-- Pull requests mod `main`
-- Push til `main`
-- Manuel kørsel via `workflow_dispatch`
-
-### Hvad CI validerer
-
-- `dotnet restore`, `dotnet build`, `dotnet test` på `CookMate.sln`
-- Docker build validering af API image (`CookMate_project/Dockerfile`)
-- Upload af test artifacts (`.trx`)
-
-### Hvad der kører på `main`
-
-- `dotnet publish` af API
-- Upload af publish artifact (`cookmate-api-publish`)
-
-### CD status
-
-Auto deploy er bevidst ikke aktiveret i baseline. Pipeline er gjort deploy-klar via build + artifacts.
-
-### Anbefalet branch protection
-
-Konfigurer følgende required status checks for `main`:
-
-- `Build and Test`
-- `Docker Validate`
