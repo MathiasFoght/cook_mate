@@ -1,0 +1,4 @@
+interface:
+  display_name: "Uncertainty Cleanup Pass"
+  short_description: "Find usikkerheder og forenkl med clean abstractions"
+  default_prompt: "Brug denne skill til at gennemgå kode for usikkerheder, kompleksitet og forslag til simple forbedringer uden over-engineering."

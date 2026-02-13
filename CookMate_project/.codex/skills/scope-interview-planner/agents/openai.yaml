@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scope Interview Planner"
+  short_description: "Afgræns opgaver via målrettede afklaringsspørgsmål"
+  default_prompt: "Brug denne skill til at afgrænse opgaven ud fra en prompt og lever en konkret scope-plan."
