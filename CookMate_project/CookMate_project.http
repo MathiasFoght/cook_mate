@@ -22,3 +22,16 @@ Content-Type: application/json
   "email": "user@example.com",
   "password": "Password123!"
 }
+
+###
+
+POST {{CookMate_project_HostAddress}}/api/auth/refresh
+
+###
+
+POST {{CookMate_project_HostAddress}}/api/auth/logout
+
+###
+
+POST {{CookMate_project_HostAddress}}/api/auth/logout-all
+Authorization: Bearer <access-token>

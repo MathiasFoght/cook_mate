@@ -25,15 +25,23 @@ public static class DependencyInjectionExtensions
                          ?? throw new InvalidOperationException("Missing JWT config section: Jwt");
         jwtOptions.Validate();
 
+        var refreshTokenOptions = configuration.GetSection(RefreshTokenOptions.SectionName).Get<RefreshTokenOptions>()
+                                  ?? throw new InvalidOperationException("Missing refresh token config section: RefreshToken");
+        refreshTokenOptions.Validate();
+
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.RegisterSingleton(jwtOptions);
+        services.Configure<RefreshTokenOptions>(configuration.GetSection(RefreshTokenOptions.SectionName));
+        services.RegisterSingleton(refreshTokenOptions);
 
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
         services.AddHealthChecks().AddDbContextCheck<AppDbContext>("database");
 
         services.RegisterScoped<IUserRepository, UserRepository>();
+        services.RegisterScoped<IRefreshSessionRepository, RefreshSessionRepository>();
         services.RegisterScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         services.RegisterScoped<IJwtTokenService, JwtTokenService>();
+        services.RegisterScoped<IRefreshTokenService, RefreshTokenService>();
         services.RegisterScoped<IAuthService, AuthService>();
 
         services.AddAuthentication(jwtOptions);

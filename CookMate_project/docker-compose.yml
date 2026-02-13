@@ -35,6 +35,10 @@ services:
       Jwt__Audience: ${JWT_AUDIENCE:-cookmate-client}
       Jwt__SigningKey: ${JWT_SIGNING_KEY:-change-me-to-at-least-32-characters}
       Jwt__AccessTokenMinutes: ${JWT_ACCESS_TOKEN_MINUTES:-30}
+      RefreshToken__RefreshTokenDays: ${REFRESH_TOKEN_DAYS:-30}
+      RefreshToken__CookieName: ${REFRESH_COOKIE_NAME:-cookmate_rt}
+      RefreshToken__CookiePath: ${REFRESH_COOKIE_PATH:-/api/auth}
+      RefreshToken__CookieSecure: ${REFRESH_COOKIE_SECURE:-true}
     ports:
       - "8080:8080"
 

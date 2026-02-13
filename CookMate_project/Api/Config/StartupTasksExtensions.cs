@@ -9,7 +9,8 @@ public static class StartupTasksExtensions
 {
     public static async Task RunStartupAsync(this WebApplication app)
     {
-        if (app.Configuration.GetValue<bool>("AUTO_MIGRATE"))
+        var autoMigrate = app.Configuration.GetValue<bool>("AUTO_MIGRATE");
+        if (autoMigrate || app.Environment.IsDevelopment())
         {
             await ApplyMigrationsAsync(app);
         }
